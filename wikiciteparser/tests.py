@@ -152,6 +152,35 @@ class ParsingTests(unittest.TestCase):
             # All templates in this example are citation templates
             self.assertIsInstance(parsed, dict)
 
+    def test_mwtext_it(self):
+        # taken from https://en.wikipedia.org/wiki/Joachim_Lambek
+        import mwparserfromhell
+        mwtext = """
+        * {{cita pubblicazione
+            | cognome = Stoney | nome = G.J.
+            | anno = 1894
+            | titolo = Of the "Electron," or Atom of Electricity
+            | rivista = [[Philosophical Magazine]]
+            | volume = 38 | numero = 5 | pp = 418–420}}
+        * {{cita pubblicazione
+            | cognome = Zeeman | nome = P.
+            | anno = 1907
+            | titolo = Sir William Crookes, F.R.S
+            | url = http://books.google.com/?id=UtYRAAAAYAAJ
+            | rivista = [[Nature (journal)|Nature]]
+            | volume = 77 | numero = 1984 | pp = 1-3| doi = 10.1038/077001a0
+            | bibcode = 1907Natur..77....1C}}
+        * {{cita pubblicazione|autore=Mohr|coautori= Taylor e Newell|titolo=CODATA recommended values of the fundamental physical constants:
+2006|p=646|url=http://rmp.aps.org/abstract/RMP/v80/i2/p633_1|anno=2008}}
+        """
+        print("test_mwtext_it")
+        wikicode = mwparserfromhell.parse(mwtext)
+        for tpl in wikicode.filter_templates():
+            parsed = parse_citation_template(tpl, 'it')
+            print  parsed
+            # All templates in this example are citation templates
+            self.assertIsInstance(parsed, dict)
+
 
 if __name__ == '__main__':
         unittest.main()

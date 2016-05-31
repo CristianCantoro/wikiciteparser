@@ -14,10 +14,14 @@ from . import it
 
 
 lua = lupa.LuaRuntime()
-luacode = ''
-luafilepath = os.path.join(os.path.dirname(__file__), 'cs1.lua')
-with open(luafilepath, 'r') as f:
-    luacode = f.read()
+def get_luacode(lang='en'):
+    luacode = ''
+    luafilepath = os.path.join(os.path.dirname(__file__), lang, 'cs1.lua')
+    with open(luafilepath, 'r') as f:
+        luacode = f.read()
+
+    return luacode
+
 
 # MediaWiki utilities simulated by Python wrappers
 def lua_to_python_re(regex):
@@ -51,8 +55,8 @@ def nowiki(string):
     except (ValueError, mwparserfromhell.parser.ParserError):
         return string
 
-# Conversion utilities, from lua objects to python objects
 
+# Conversion utilities, from lua objects to python objects
 def is_int(val):
     """
     Is this lua object an integer?
@@ -65,7 +69,6 @@ def is_int(val):
 
 
 wrapped_type = lua.globals().type
-
 def toPyDict(lua_val):
     """
     Converts a lua dict to a Python one
@@ -89,7 +92,7 @@ def toPyDict(lua_val):
     else:
         return lua_val
 
-def parse_citation_dict(arguments, template_name='citation'):
+def parse_citation_dict(arguments, template_name='citation', lang='en'):
     """
     Parses the Wikipedia citation into a python dict.
 
@@ -99,6 +102,7 @@ def parse_citation_dict(arguments, template_name='citation'):
     """
     arguments['_tpl'] = template_name
     lua_table = lua.table_from(arguments)
+    luacode = get_luacode(lang=lang)
     lua_result = lua.eval(luacode)(lua_table,
             ustring_match,
             ustring_len,
@@ -147,4 +151,6 @@ def parse_citation_template(template, lang='en'):
     if not is_citation_template_name(name, lang):
         return
     return parse_citation_dict(params_to_dict(template.params),
-                               template_name=name)
+                               template_name=name,
+                               lang=lang
+                               )
